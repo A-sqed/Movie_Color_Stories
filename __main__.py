@@ -7,7 +7,35 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
+import logging
+import pathlib
+path = pathlib.Path(__file__).parent.absolute()
 
+logger = logging.getLogger(__name__)
+logger.setLevel(logging.INFO)
+
+# create file handler which logs even debug messages
+fh = logging.FileHandler('.log')
+fh.setLevel(logging.INFO)
+# create console handler with a higher log level
+ch = logging.StreamHandler()
+ch.setLevel(logging.INFO)
+# create formatter and add it to the handlers
+formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fh.setFormatter(formatter)
+ch.setFormatter(formatter)
+# add the handlers to the logger
+logger.addHandler(fh)
+logger.addHandler(ch)
+
+vidcap = cv2.VideoCapture('C:\\Users\\Adrian\\Downloads\\_the_little_mermaid.avi')
+success,image = vidcap.read()
+count = 0
+while success:
+  #cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file      
+  #success,image = vidcap.read()
+  print('Read a new frame: ', success)
+  count += 1
 
 def find_histogram(clt):
     """
@@ -37,6 +65,7 @@ def plot_colors2(hist, centroids):
     # return the bar chart
     return bar
 
+"""
 img = cv2.imread("pic/img7.jpeg")
 img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
 
@@ -50,3 +79,4 @@ bar = plot_colors2(hist, clt.cluster_centers_)
 plt.axis("off")
 plt.imshow(bar)
 plt.show()
+"""
