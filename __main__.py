@@ -28,11 +28,11 @@ ch.setFormatter(formatter)
 logger.addHandler(fh)
 logger.addHandler(ch)
 
-path = 'C:\\Users\\Adrian\\Downloads\\_the_little_mermaid.avi'
+path = "C:\Users\Adrian\Downloads\\_the_little_mermaid.avi"
 print("Video Path: ", path)
 print(cv.__version__)
 
-print(cv.getBuildInformation())
+#print(cv.getBuildInformation())
 vidcap = cv.VideoCapture(path, cv.CAP_FFMPEG)
 success, image = vidcap.read()
 count = 0
