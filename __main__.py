@@ -12,7 +12,7 @@ from PIL import Image
 import PIL
 import tqdm
 import pathlib
-from io import BytesIO
+import io 
 path = pathlib.Path(__file__).parent.absolute()
 
 logger = logging.getLogger(__name__)
@@ -74,11 +74,10 @@ if (cap.isOpened()== False):
   print("Error opening video stream or file")
  
 frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-
 print(f"Total Frame Count: {frame_count}")
-#input("Press Enter to continue...")
 
 for f in range(41000,41001):
+    
     ret, frame = cap.read()    
 
     logger.info(f"Converting Frame {f}")
@@ -99,10 +98,17 @@ for f in range(41000,41001):
 
     hist = find_histogram(clt)
     bar = plot_colors2(hist, clt.cluster_centers_)
-    bar = bar.rotate(90, PIL.Image.NEAREST, expand = 1)
+    
     plt.axis("off")
     plt.imshow(bar)
-    plt.show()
+    buffer = io.BytesIO()
+    plt.savefig(buffer, format='png')
+    im = Image.open(buffer)
+    buffer.seek(0)
+    im = im.rotate(-90, PIL.Image.NEAREST, expand = 1)
+    buffer.close()
+    #im.show()
+    #plt.show()
 
 
 cap.release()
