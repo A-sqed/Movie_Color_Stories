@@ -3,7 +3,7 @@
 # Contact: faa2160@columbia.edu
 ################################################################################
 
-import cv2
+import cv2 as cv
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
@@ -28,14 +28,25 @@ ch.setFormatter(formatter)
 logger.addHandler(fh)
 logger.addHandler(ch)
 
-vidcap = cv2.VideoCapture('C:\\Users\\Adrian\\Downloads\\_the_little_mermaid.avi')
-success,image = vidcap.read()
+path = 'C:\\Users\\Adrian\\Downloads\\_the_little_mermaid.avi'
+print("Video Path: ", path)
+print(cv.__version__)
+
+print(cv.getBuildInformation())
+vidcap = cv.VideoCapture(path, cv.CAP_FFMPEG)
+success, image = vidcap.read()
 count = 0
+
 while success:
-  #cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file      
-  #success,image = vidcap.read()
-  print('Read a new frame: ', success)
-  count += 1
+    #cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file      
+    success, image = vidcap.read()
+    # if frame is read correctly ret is True
+    if not success:
+        print("Can't receive frame (stream end?). Exiting ...")
+        break
+    print('Read a new frame: ', success)
+    count += 1
+print(count)
 
 def find_histogram(clt):
     """
