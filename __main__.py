@@ -28,15 +28,19 @@ ch.setFormatter(formatter)
 logger.addHandler(fh)
 logger.addHandler(ch)
 
-path = "C:\Users\Adrian\Downloads\\_the_little_mermaid.avi"
+path = ("B:\\_projects\\_the_little_mermaid.avi")
 print("Video Path: ", path)
 print(cv.__version__)
 
 #print(cv.getBuildInformation())
-vidcap = cv.VideoCapture(path, cv.CAP_FFMPEG)
+vidcap = cv.VideoCapture(path)
+vidcap.cv.CV_FOURCC(*'XVID')
 success, image = vidcap.read()
 count = 0
 
+if (vidcap.isOpened()== False):
+  print("Error opening video stream or file")
+  
 while success:
     #cv2.imwrite("frame%d.jpg" % count, image)     # save frame as JPEG file      
     success, image = vidcap.read()
