@@ -38,6 +38,10 @@ ch.setLevel(logging.INFO)
 # Print to console
 #logger.addHandler(ch)
 
+################################################################################
+# Helpers
+################################################################################
+
 def find_histogram(clt):
     """
     create a histogram with k clusters
@@ -116,7 +120,6 @@ def plot_histogram(average_image):
         # Dont send frame, send average of buffer writes to jpeg
         img = np.asarray(average_image) 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        
         # Confirmed Same
         #cv2.imshow('test', img)
 
@@ -142,18 +145,11 @@ def plot_histogram(average_image):
         plt.savefig(buffer, format='png')
         buffer.seek(0)
         im = Image.open(buffer)
-        im = im.resize((slice_height, slice_width))
-        im = im.rotate(-90, PIL.Image.NEAREST, expand = 1)
-        im.show()
+        return im
 
-    
-#path = ("B:\\_projects\\_the_little_mermaid.")
-slice_height = 1900
-slice_width = 500
-canvas_width = 3840
-cv2.startWindowThread()
-# New image to hold final canvas 
-final_image = Image.new("RGB", (canvas_width, slice_height), (255, 255, 255))
+################################################################################
+# Output Settings
+################################################################################
 
 path = "B:\\Videos\\_BLACK_22.mp4"
 print("Video Path: ", path)
@@ -163,52 +159,70 @@ cap = cv2.VideoCapture(path)
 if (cap.isOpened()== False):
   print("Error opening video stream or file")
 
-else:
-    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-    num_frames_to_average, stub_frames = frame_to_average(frame_count, canvas_width)
-    stub_period = False
-    fps = round(cap.get(cv2.CAP_PROP_FPS))
-    target_fps = 1 # Capture image at 1 fps
-    frame_buffer_list = []
-    frame_list = []
-    hop = round(fps / target_fps)
+target_fps = 1 #How many FPS for each histo
+histo_count = 0
+frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+fps = round(cap.get(cv2.CAP_PROP_FPS))
+hop = round(fps / target_fps)
+stub_period = False
 
-    print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames")
+frame_buffer_list = []
+frame_list = []
 
-    for f in range(46000, 46024):
-        cap.set(1,f)
-        if (frame_count - f) == stub_frames:
-            stub_period = True 
+max_canvas_width = 3840 #4K max width
+total_histos = frame_count/fps
+#slice_width = math.floor(max_canvas_width / total_histos)
+slice_width = 50
+target_canvas_width = math.ceil(slice_width*total_histos)
+#slice_height = math.ceil(target_canvas_width/2)
+slice_height = 1900
+target_canvas_height = slice_height
+
+# New image to hold final canvas & make it white
+final_image = Image.new("RGB", (target_canvas_width, slice_height), (255, 255, 255))
+num_frames_to_average, stub_frames = frame_to_average(frame_count, target_canvas_width)
+
+print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames")
+print(f"Setting slice to {slice_width} pixels (w) and canvas to {target_canvas_width}(W) x {target_canvas_height}(H)")
+
+# Set range to be a mod of FPS target 
+for f in range(46000, 46024):
+    
+    # Isolate the frame
+    cap.set(1,f)
+    
+    if (frame_count - f) == stub_frames:
+        stub_period = True 
+    
+    ret, frame = cap.read()
+    
+    if not ret: 
+        break
+
+    # encode
+    retval, buffer = cv2.imencode('.jpg', frame)
+    jpg_as_text = base64.b64encode(buffer)
         
-        ret, frame = cap.read()
-        
-        if not ret: 
-            break
+    # Hold histogram image for processing
+    frame_buffer_list.append(jpg_as_text)
+    
+    # If you have processed enough frames for target fps 
+    if len(frame_buffer_list) == hop: 
 
-        # encode
-        retval, buffer = cv2.imencode('.jpg', frame)
-        jpg_as_text = base64.b64encode(buffer)
-        #print(jpg_as_text[:80])
+        # Average the list of frames seen
+        averaged_frame = average_frames(frame_buffer_list)
         
-             
-        # Hold histogram image for processing
-        frame_buffer_list.append(jpg_as_text)
-
-        # If you have processed enough frames for target fps 
-        if len(frame_buffer_list) == hop: 
-            
-            averaged_frame = average_frames(frame_buffer_list)
-            plot_histogram(averaged_frame)
-            
-            frame_buffer_list = []
-            
+        # Find a k-cluster histogram of the average 
+        image = plot_histogram(averaged_frame)
+        histo_count += 1
+        
+        # Change Size of histo
+        image = image.resize((slice_height, slice_width))
+        image = image.rotate(-90, PIL.Image.NEAREST, expand = 1)
+        image.show()
+        frame_buffer_list = []
+    
         logger.info("{:.2%} of total video analyzed".format(f/frame_count))
 
-        
-        #im.show()
-        #plt.show()
-
-
-    cap.release()
-    cv2.destroyAllWindows()
-
+cap.release()
+cv2.destroyAllWindows()
