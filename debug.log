@@ -1,3 +1,129 @@
 15:36:45 [INFO] - [__main__.py > <module>() > 117] - Converting Frame 41000
 15:36:46 [INFO] - [__main__.py > <module>() > 121] - Reshaping Frame 41000
 15:36:46 [INFO] - [__main__.py > <module>() > 127] - KMeans, Clusters: 4, Frame: 41000
+15:53:12 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 41000
+15:53:12 [INFO] - [__main__.py > <module>() > 132] - Reshaping Frame 41000
+15:53:12 [INFO] - [__main__.py > <module>() > 138] - KMeans, Clusters: 4, Frame: 41000
+15:53:31 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+15:53:31 [INFO] - [__main__.py > <module>() > 132] - Reshaping Frame 25000
+15:53:31 [INFO] - [__main__.py > <module>() > 138] - KMeans, Clusters: 4, Frame: 25000
+15:55:53 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+15:55:53 [INFO] - [__main__.py > <module>() > 132] - Reshaping Frame 25000
+15:55:53 [INFO] - [__main__.py > <module>() > 138] - KMeans, Clusters: 4, Frame: 25000
+15:56:34 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+15:56:34 [INFO] - [__main__.py > <module>() > 132] - Reshaping Frame 25000
+15:56:34 [INFO] - [__main__.py > <module>() > 138] - KMeans, Clusters: 4, Frame: 25000
+15:58:09 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+15:58:09 [INFO] - [__main__.py > <module>() > 132] - Reshaping Frame 25000
+15:58:09 [INFO] - [__main__.py > <module>() > 139] - KMeans, Clusters: 4, Frame: 25000
+15:58:18 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+15:58:18 [INFO] - [__main__.py > <module>() > 132] - Reshaping Frame 25000
+15:58:18 [INFO] - [__main__.py > <module>() > 139] - KMeans, Clusters: 4, Frame: 25000
+15:58:44 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+15:58:51 [INFO] - [__main__.py > <module>() > 136] - Reshaping Frame 25000
+15:58:51 [INFO] - [__main__.py > <module>() > 143] - KMeans, Clusters: 4, Frame: 25000
+16:00:10 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:00:10 [INFO] - [__main__.py > <module>() > 133] - Reshaping Frame 25000
+16:00:10 [INFO] - [__main__.py > <module>() > 140] - KMeans, Clusters: 4, Frame: 25000
+16:01:30 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:01:30 [INFO] - [__main__.py > <module>() > 134] - Reshaping Frame 25000
+16:01:30 [INFO] - [__main__.py > <module>() > 141] - KMeans, Clusters: 4, Frame: 25000
+16:02:08 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:02:08 [INFO] - [__main__.py > <module>() > 134] - Reshaping Frame 25000
+16:02:58 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:02:58 [INFO] - [__main__.py > <module>() > 134] - Reshaping Frame 25000
+16:02:58 [INFO] - [__main__.py > <module>() > 141] - KMeans, Clusters: 4, Frame: 25000
+16:04:06 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:04:10 [INFO] - [__main__.py > <module>() > 135] - Reshaping Frame 25000
+16:04:10 [INFO] - [__main__.py > <module>() > 142] - KMeans, Clusters: 4, Frame: 25000
+16:06:19 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:06:32 [INFO] - [__main__.py > <module>() > 128] - Converting Frame 25000
+16:06:32 [INFO] - [__main__.py > <module>() > 133] - Reshaping Frame 25000
+16:06:32 [INFO] - [__main__.py > <module>() > 140] - KMeans, Clusters: 4, Frame: 25000
+16:11:38 [INFO] - [__main__.py > <module>() > 134] - Converting Frame 0
+16:11:38 [INFO] - [__main__.py > <module>() > 138] - Reshaping Frame 0
+16:11:38 [INFO] - [__main__.py > <module>() > 145] - KMeans, Clusters: 4, Frame: 0
+16:11:40 [INFO] - [__main__.py > <module>() > 134] - Converting Frame 1
+16:11:40 [INFO] - [__main__.py > <module>() > 138] - Reshaping Frame 1
+16:11:40 [INFO] - [__main__.py > <module>() > 145] - KMeans, Clusters: 4, Frame: 1
+16:11:42 [INFO] - [__main__.py > <module>() > 134] - Converting Frame 2
+16:11:42 [INFO] - [__main__.py > <module>() > 138] - Reshaping Frame 2
+16:11:42 [INFO] - [__main__.py > <module>() > 145] - KMeans, Clusters: 4, Frame: 2
+04:14:07 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 0
+04:14:07 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 0
+04:14:07 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 0
+04:15:32 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 0
+04:15:32 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 0
+04:15:32 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 0
+04:15:35 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 1
+04:15:35 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 1
+04:15:35 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 1
+04:15:36 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 2
+04:15:36 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 2
+04:15:36 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 2
+04:15:37 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 3
+04:15:37 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 3
+04:15:37 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 3
+04:15:39 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 4
+04:15:39 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 4
+04:15:39 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 4
+04:15:40 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 5
+04:15:40 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 5
+04:15:40 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 5
+04:15:43 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 6
+04:15:43 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 6
+04:15:43 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 6
+04:15:46 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 7
+04:15:46 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 7
+04:15:46 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 7
+04:15:48 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 8
+04:15:48 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 8
+04:15:48 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 8
+04:15:52 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 9
+04:15:52 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 9
+04:15:52 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 9
+04:15:55 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 10
+04:15:55 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 10
+04:15:55 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 10
+04:15:58 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 11
+04:15:58 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 11
+04:15:58 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 11
+04:16:02 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 12
+04:16:02 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 12
+04:16:02 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 12
+04:16:06 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 13
+04:16:06 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 13
+04:16:06 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 13
+04:16:10 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 14
+04:16:10 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 14
+04:16:10 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 14
+04:16:15 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 15
+04:16:15 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 15
+04:16:15 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 15
+04:16:19 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 16
+04:16:19 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 16
+04:16:19 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 16
+04:16:23 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 17
+04:16:23 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 17
+04:16:23 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 17
+04:16:28 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 18
+04:16:28 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 18
+04:16:28 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 18
+04:16:33 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 19
+04:16:33 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 19
+04:16:33 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 19
+04:16:37 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 20
+04:16:38 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 20
+04:16:38 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 20
+04:16:42 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 21
+04:16:42 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 21
+04:16:42 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 21
+04:16:46 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 22
+04:16:46 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 22
+04:16:46 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 22
+04:16:51 [INFO] - [__main__.py > <module>() > 136] - Converting Frame 23
+04:16:51 [INFO] - [__main__.py > <module>() > 140] - Reshaping Frame 23
+04:16:51 [INFO] - [__main__.py > <module>() > 147] - KMeans, Clusters: 4, Frame: 23
+04:22:43 [INFO] - [__main__.py > <module>() > 139] - Converting Frame 22
+04:22:43 [INFO] - [__main__.py > <module>() > 143] - Reshaping Frame 22
+04:22:43 [INFO] - [__main__.py > <module>() > 150] - KMeans, Clusters: 4, Frame: 22

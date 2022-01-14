@@ -15,6 +15,7 @@ import tqdm
 import math
 import pathlib
 import io 
+import base64
 path = pathlib.Path(__file__).parent.absolute()
 
 logger = logging.getLogger(__name__)
@@ -81,29 +82,74 @@ def frame_to_average(frames, canvas_width = 3840):
     stub_frames = frames % canvas_width
     return average, stub_frames
 
+#https://stackoverflow.com/questions/52865771/write-opencv-image-in-memory-to-bytesio-or-tempfile
 # Make the dict a list
-def average_images(img_dict, num_frames_to_average):
+def average_frames(frame_buffer_list):
     # Assuming all images are the same size, get dimensions of first image
-    w, h = Image.open(img_dict[1].size)
-    N = num_frames_to_average+1
-    
+    im =  base64.b64decode(frame_buffer_list[0])
+    image = Image.open(io.BytesIO(im))
+    w, h = image.size
+    N = len(frame_buffer_list)
+    print(w, h)
     # Create a numpy array of floats to store the average (assume RGB images)
-    arr=np.zeros((h,w,3),np.float)
+    arr = np.zeros((h,w,3),np.float)
     
-    for im in imlist:
-        imarr=np.array(Image.open(im),dtype=np.float)
-        arr=arr+imarr/N
+    # Build up average pixel intensities, casting each image as an array of floats
+    for io_buf in frame_buffer_list:
+        im = cv2.imdecode(np.frombuffer(io_buf.getbuffer(), np.uint8), -1)
+        imarr = np.array(Image.open(im), dtype=np.float)
+        arr = arr+imarr/N
+    
+    # Round values in array and cast as 8-bit integer
+    arr=np.array(np.round(arr),dtype=np.uint8)
+    
+    # Generate, save and preview final image
+    out=Image.fromarray(arr, mode="RGB")
+    out.save("./Average.png")
+    out.show()   
+ 
+def plot_histogram():
+        logger.info(f"Converting Frame {f}")
+        
+        # Dont send frame, send average of buffer writes to jpeg 
+        _, JPEG = cv2.imencode('.jpg', frame)
+        img = cv2.cvtColor(JPEG, cv2.COLOR_BGR2RGB)
+        
+        logger.info(f"Reshaping Frame {f}")
+
+        #represent as row*column,channel number
+        img = img.reshape((img.shape[0] * img.shape[1],3)) 
+
+        #cluster number
+        n_clusters = 4
+        logger.info(f"KMeans, Clusters: {n_clusters}, Frame: {f}")
+        
+        # Fit the model using the image 
+        clt = KMeans(n_clusters=n_clusters) 
+        clt.fit(img)
+
+        hist = find_histogram(clt)
+        bar = plot_colors2(hist, clt.cluster_centers_)
+        
+        plt.axis("off")
+        plt.imshow(bar)
+        buffer = io.BytesIO()
+        plt.savefig(buffer, format='png')
+        buffer.seek(0)
+        im = Image.open(buffer)
+        im = im.resize((slice_height, slice_width))
+        im = im.rotate(-90, PIL.Image.NEAREST, expand = 1)   
+
     
 #path = ("B:\\_projects\\_the_little_mermaid.")
 slice_height = 1900
 slice_width = 500
 canvas_width = 3840
-images_processed = 1
-
+cv2.startWindowThread()
 # New image to hold final canvas 
 final_image = Image.new("RGB", (canvas_width, slice_height), (255, 255, 255))
 
-path = "B:\\Videos\\_BLACK_13.mp4"
+path = "B:\\Videos\\_BLACK_22.mp4"
 print("Video Path: ", path)
 
 cap = cv2.VideoCapture(path)
@@ -111,65 +157,50 @@ cap = cv2.VideoCapture(path)
 if (cap.isOpened()== False):
   print("Error opening video stream or file")
 
-frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-num_frames_to_average, stub_frames = frame_to_average(frame_count, canvas_width)
-stub_period = False
-frame_dict = {key:[] for key in range(1, num_frames_to_average+1)}
+else:
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    num_frames_to_average, stub_frames = frame_to_average(frame_count, canvas_width)
+    stub_period = False
+    fps = round(cap.get(cv2.CAP_PROP_FPS))
+    target_fps = 1 # Capture image at 1 fps
+    frame_buffer_list = []
+    frame_list = []
+    hop = round(fps / target_fps)
 
-print(f"Total Frame Count: {frame_count}, Averaging {num_frames_to_average} Frames")
-
-
-for f in range(41000,41001):
     
-    if (frame_count - f) == stub_frames:
-        stub_period = True 
+    print(f"Total Frame Count: {frame_count}")
+    print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS")
+
+    for f in range(0, 24):
+
+        if (frame_count - f) == stub_frames:
+            stub_period = True 
         
-    ret, frame = cap.read()    
-
-    logger.info(f"Converting Frame {f}")
-    _, JPEG = cv2.imencode('.jpeg', frame)
-    img = cv2.cvtColor(JPEG, cv2.COLOR_BGR2RGB)
-
-    logger.info(f"Reshaping Frame {f}")
-    #represent as row*column,channel number
-    img = img.reshape((img.shape[0] * img.shape[1],3)) 
-
-    #cluster number
-    n_clusters = 4
-    logger.info(f"KMeans, Clusters: {n_clusters}, Frame: {f}")
-    
-    # Fit the model using the image 
-    clt = KMeans(n_clusters=n_clusters) 
-    clt.fit(img)
-
-    hist = find_histogram(clt)
-    bar = plot_colors2(hist, clt.cluster_centers_)
-    
-    plt.axis("off")
-    plt.imshow(bar)
-    buffer = io.BytesIO()
-    plt.savefig(buffer, format='png')
-    buffer.seek(0)
-    im = Image.open(buffer)
-    im = im.resize((slice_height, slice_width))
-    im = im.rotate(-90, PIL.Image.NEAREST, expand = 1)   
-    
-    # Hold histogram image for processing
-    frame_dict[images_processed] = im
-    
-    if images_processed == num_frames_to_average+1: 
+        ret, frame = cap.read()
         
-        # Send to Averaging method 
+        if not ret: 
+            break
+
+        # encode
+        retval, buffer = cv2.imencode('.jpg', frame)
+        jpg_as_text = base64.b64encode(buffer)
+        #print(jpg_as_text[:80])
         
-        images_processed = 1
-    else:
-        images_processed += 1
-    
-    buffer.close()
-    im.show()
-    #plt.show()
+             
+        # Hold histogram image for processing
+        frame_buffer_list.append(jpg_as_text)
+
+        # If you have processed enough frames for target fps 
+        if len(frame_buffer_list) == hop: 
+            average_frames(frame_buffer_list)
+            frame_buffer_list = []
 
 
-cap.release()
-cv2.destroyAllWindows()
+        
+        #im.show()
+        #plt.show()
+
+
+    cap.release()
+    cv2.destroyAllWindows()
 
