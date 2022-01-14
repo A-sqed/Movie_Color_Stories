@@ -82,46 +82,51 @@ def frame_to_average(frames, canvas_width = 3840):
     stub_frames = frames % canvas_width
     return average, stub_frames
 
-#https://stackoverflow.com/questions/52865771/write-opencv-image-in-memory-to-bytesio-or-tempfile
-# Make the dict a list
 def average_frames(frame_buffer_list):
+    logger.info(f"Finding an average image of {len(frame_buffer_list)} frames")
+
     # Assuming all images are the same size, get dimensions of first image
     im =  base64.b64decode(frame_buffer_list[0])
     image = Image.open(io.BytesIO(im))
     w, h = image.size
     N = len(frame_buffer_list)
-    print(w, h)
+    
     # Create a numpy array of floats to store the average (assume RGB images)
     arr = np.zeros((h,w,3),np.float)
     
     # Build up average pixel intensities, casting each image as an array of floats
     for io_buf in frame_buffer_list:
-        im = cv2.imdecode(np.frombuffer(io_buf.getbuffer(), np.uint8), -1)
-        imarr = np.array(Image.open(im), dtype=np.float)
+        im =  base64.b64decode(io_buf)
+        imarr = np.array(Image.open(io.BytesIO(im)), dtype=np.float)
         arr = arr+imarr/N
     
     # Round values in array and cast as 8-bit integer
     arr=np.array(np.round(arr),dtype=np.uint8)
     
     # Generate, save and preview final image
-    out=Image.fromarray(arr, mode="RGB")
-    out.save("./Average.png")
-    out.show()   
+    average_image = Image.fromarray(arr, mode="RGB")
+    
+    # Check how frames are being averaged
+    #average_image.save("Average.png")
+    #average_image.show()
+    return average_image  
  
-def plot_histogram():
-        logger.info(f"Converting Frame {f}")
+def plot_histogram(average_image):
         
-        # Dont send frame, send average of buffer writes to jpeg 
-        _, JPEG = cv2.imencode('.jpg', frame)
-        img = cv2.cvtColor(JPEG, cv2.COLOR_BGR2RGB)
+        # Dont send frame, send average of buffer writes to jpeg
+        img = np.asarray(average_image) 
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         
-        logger.info(f"Reshaping Frame {f}")
+        # Confirmed Same
+        #cv2.imshow('test', img)
 
+        logger.info(f"Reshaping Frame")
+        
         #represent as row*column,channel number
         img = img.reshape((img.shape[0] * img.shape[1],3)) 
 
         #cluster number
-        n_clusters = 4
+        n_clusters = 6
         logger.info(f"KMeans, Clusters: {n_clusters}, Frame: {f}")
         
         # Fit the model using the image 
@@ -138,7 +143,8 @@ def plot_histogram():
         buffer.seek(0)
         im = Image.open(buffer)
         im = im.resize((slice_height, slice_width))
-        im = im.rotate(-90, PIL.Image.NEAREST, expand = 1)   
+        im = im.rotate(-90, PIL.Image.NEAREST, expand = 1)
+        im.show()
 
     
 #path = ("B:\\_projects\\_the_little_mermaid.")
@@ -167,12 +173,10 @@ else:
     frame_list = []
     hop = round(fps / target_fps)
 
-    
-    print(f"Total Frame Count: {frame_count}")
-    print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS")
+    print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames")
 
-    for f in range(0, 24):
-
+    for f in range(46000, 46024):
+        cap.set(1,f)
         if (frame_count - f) == stub_frames:
             stub_period = True 
         
@@ -192,9 +196,13 @@ else:
 
         # If you have processed enough frames for target fps 
         if len(frame_buffer_list) == hop: 
-            average_frames(frame_buffer_list)
+            
+            averaged_frame = average_frames(frame_buffer_list)
+            plot_histogram(averaged_frame)
+            
             frame_buffer_list = []
-
+            
+        logger.info("{:.2%} of total video analyzed".format(f/frame_count))
 
         
         #im.show()
