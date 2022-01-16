@@ -1,7 +1,7 @@
 ################################################################################
 # Author: Adrian Adduci
 # Contact: faa2160@columbia.edu
-#
+# https://code.likeagirl.io/finding-dominant-colour-on-an-image-b4e075f98097
 ################################################################################
 
 from decimal import ROUND_DOWN
