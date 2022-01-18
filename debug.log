@@ -10307,3 +10307,86 @@
 08:34:13 [INFO] - [__main__.py > plot_histogram() > 123] - Reshaping Frame
 08:34:13 [INFO] - [__main__.py > plot_histogram() > 130] - KMeans, Clusters: 6, Frame: 58439
 08:34:41 [INFO] - [__main__.py > <module>() > 237] - 99.97% of total video analyzed
+11:25:28 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+11:25:30 [INFO] - [__main__.py > plot_histogram() > 127] - Reshaping Frame
+11:25:30 [INFO] - [__main__.py > plot_histogram() > 134] - KMeans, Clusters: 4, Frame: 44023
+11:30:55 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+11:30:57 [INFO] - [__main__.py > plot_histogram() > 127] - Reshaping Frame
+11:30:57 [INFO] - [__main__.py > plot_histogram() > 134] - KMeans, Clusters: 4, Frame: 44023
+11:31:09 [INFO] - [__main__.py > <module>() > 242] - 75.31% of total video analyzed
+11:32:04 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+11:32:06 [INFO] - [__main__.py > plot_histogram() > 127] - Reshaping Frame
+11:32:06 [INFO] - [__main__.py > plot_histogram() > 134] - KMeans, Clusters: 5, Frame: 44023
+11:32:22 [INFO] - [__main__.py > <module>() > 242] - 75.31% of total video analyzed
+16:14:12 [INFO] - [__main__.py > average_frames() > 92] - Finding an average image of 24 frames
+16:14:14 [INFO] - [__main__.py > plot_histogram() > 128] - Reshaping Frame
+16:14:14 [INFO] - [__main__.py > plot_histogram() > 135] - KMeans, Clusters: 5, Frame: 44023
+16:14:29 [INFO] - [__main__.py > <module>() > 243] - 75.31% of total video analyzed
+16:15:51 [INFO] - [__main__.py > average_frames() > 92] - Finding an average image of 24 frames
+16:15:53 [INFO] - [__main__.py > plot_histogram() > 128] - Reshaping Frame
+16:15:53 [INFO] - [__main__.py > plot_histogram() > 135] - KMeans, Clusters: 5, Frame: 44023
+16:16:08 [INFO] - [__main__.py > <module>() > 243] - 75.31% of total video analyzed
+16:22:10 [INFO] - [__main__.py > average_frames() > 92] - Finding an average image of 24 frames
+16:22:12 [INFO] - [__main__.py > plot_histogram() > 128] - Reshaping Frame
+16:22:12 [INFO] - [__main__.py > plot_histogram() > 135] - KMeans, Clusters: 5, Frame: 44023
+16:22:27 [INFO] - [__main__.py > <module>() > 243] - 75.31% of total video analyzed
+16:27:10 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:27:12 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:27:12 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:27:27 [INFO] - [__main__.py > <module>() > 240] - 75.31% of total video analyzed
+16:29:46 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:29:49 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:29:49 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:30:06 [INFO] - [__main__.py > <module>() > 240] - 75.31% of total video analyzed
+16:33:50 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:33:52 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:33:52 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:34:43 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:34:46 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:34:46 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:37:30 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:37:33 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:37:33 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:40:39 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:40:51 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:40:53 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:40:53 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:41:48 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:41:50 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:41:50 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:42:06 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:42:09 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:42:09 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:43:14 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:43:16 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:43:16 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:48:43 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:48:46 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:48:46 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:49:28 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:49:31 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:49:31 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:51:38 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:51:41 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:51:41 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:51:55 [INFO] - [__main__.py > <module>() > 242] - 75.31% of total video analyzed
+16:53:02 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:53:05 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:53:05 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:53:19 [INFO] - [__main__.py > <module>() > 240] - 75.31% of total video analyzed
+16:57:55 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:57:57 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:57:57 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:58:12 [INFO] - [__main__.py > <module>() > 241] - 75.31% of total video analyzed
+16:58:51 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+16:58:54 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+16:58:54 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+16:59:11 [INFO] - [__main__.py > <module>() > 241] - 75.31% of total video analyzed
+17:00:13 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+17:00:15 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+17:00:15 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44023
+17:00:33 [INFO] - [__main__.py > <module>() > 241] - 75.31% of total video analyzed
+17:00:35 [INFO] - [__main__.py > average_frames() > 91] - Finding an average image of 24 frames
+17:00:38 [INFO] - [__main__.py > plot_histogram() > 124] - Reshaping Frame
+17:00:38 [INFO] - [__main__.py > plot_histogram() > 131] - KMeans, Clusters: 5, Frame: 44047
+17:00:53 [INFO] - [__main__.py > <module>() > 241] - 75.35% of total video analyzed

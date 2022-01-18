@@ -5,6 +5,7 @@
 ################################################################################
 
 from decimal import ROUND_DOWN
+from tkinter.tix import Y_REGION
 import cv2 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -58,20 +59,19 @@ def find_histogram(clt):
 
     return hist
 
-def plot_colors2(hist, centroids):
+def plot_colors2(hist, centroids, slice_width, slice_height):
 
     # Size the Bar    
-    x = 50
-    y = 500
+    x = slice_width #50
+    y = slice_height #500
     rgb = 3
     bar = np.zeros((x, y, rgb), dtype="uint8")
     startX = 0
 
     for (percent, color) in zip(hist, centroids):
-        
+
         # plot the relative percentage of each cluster
         endX = startX + (percent * y)
-
         cv2.rectangle(bar, 
                       (int(startX), 0), 
                       (int(endX), x),
@@ -112,17 +112,14 @@ def average_frames(frame_buffer_list):
     average_image = Image.fromarray(arr, mode="RGB")
     
     # Check how frames are being averaged
-    #average_image.save("Average.png")
     #average_image.show()
     return average_image  
  
-def plot_histogram(average_image):
+def plot_histogram(average_image, slice_width, slice_height):
         
         # Dont send frame, send average of buffer writes to png
         img = np.asarray(average_image) 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-        # Confirmed Same
-        #cv2.imshow('test', img)
 
         logger.info(f"Reshaping Frame")
         
@@ -130,7 +127,7 @@ def plot_histogram(average_image):
         img = img.reshape((img.shape[0] * img.shape[1],3)) 
 
         #cluster number
-        n_clusters = 6
+        n_clusters = 5
         logger.info(f"KMeans, Clusters: {n_clusters}, Frame: {f}")
         
         # Fit the model using the image 
@@ -138,17 +135,19 @@ def plot_histogram(average_image):
         clt.fit(img)
 
         hist = find_histogram(clt)
-        bar = plot_colors2(hist, clt.cluster_centers_)
-        
+        bar = plot_colors2(hist, clt.cluster_centers_, slice_width, slice_height)
+
+        dpi=96 # dots per inch
+        #plt.figure(figsize=(math.ceil(slice_width/dpi), math.ceil(slice_height/dpi)), dpi=dpi)
         plt.axis("off")
         plt.margins(0)
-        #print("Here, this is what matters:")
         plt.imshow(bar, interpolation='antialiased', origin='upper')
-        #print("Here, this is what matters:")
+
         buffer = io.BytesIO()
         plt.savefig(buffer, format='png', bbox_inches='tight', frameon=False, pad_inches=0.0)
         buffer.seek(0)
         im = Image.open(buffer)
+        #print(f"Before going to main here is the size: {im.size}")
         return im
 
 ################################################################################
@@ -167,7 +166,7 @@ except ValueError as e:
     print(f"Unexpected {e=}, {type(e)=}")
 
 
-target_fps = 1 #How many FPS for each histo
+target_fps = 1 # How many FPS for each histo
 histo_count = 0
 frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
 fps = round(cap.get(cv2.CAP_PROP_FPS))
@@ -181,11 +180,10 @@ canvas_resize_width = 3840 #4K max width
 
 #slice_width = 25
 target_canvas_width = 3840
+slice_width = math.floor(frame_count/target_canvas_width) #math.floor(target_canvas_width / total_histos)
 #target_canvas_width = math.ceil(slice_width*total_histos)
-slice_width = math.floor(target_canvas_width / total_histos)
-slice_height = math.ceil(target_canvas_width*.75)
-#slice_height = 1900
-target_canvas_height = slice_height
+slice_height = 2160 #math.ceil(target_canvas_width*.75)
+target_canvas_height = 2160 #slice_height
 
 final_image = Image.new("RGB", (target_canvas_width, target_canvas_height), (255, 255, 255))
 final_image = final_image.save(final_img_path)
@@ -193,7 +191,7 @@ final_image = final_image.save(final_img_path)
 print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames")
 print(f"Setting slice to {slice_width} pixels (w) and canvas to {target_canvas_width}(W) x {target_canvas_height}(H)")
 
-# Set range to be a mod of FPS target 
+# Set range to be a mod of FPS target for f in range(0, frame_count):
 for f in range(0, frame_count):
     
     # Isolate the frame
@@ -219,23 +217,25 @@ for f in range(0, frame_count):
         #averaged_frame.show(title='Average frame')
         
         # Find a k-cluster histogram of the average 
-        image = plot_histogram(averaged_frame)
+        image = plot_histogram(averaged_frame, slice_width, slice_height)
         
         # Change Size of histo
-        image = image.resize((slice_height, slice_width))
-       # print(f"Image before rotate size: {image.size}")
+        #
+        print(f"Image before rotate size: {image.size}")
         image = image.rotate(-90, resample=PIL.Image.NEAREST, expand = 1)
-        #print(f"Image after rotate size: {image.size}")
-        #image.show(title="Histo of average")
+        image = image.resize((slice_width, slice_height))
+        #image.thumbnail((slice_width, slice_height), PIL.Image.ANTIALIAS )
+        print(f"Image after rotate size: {image.size}")
+        image.show()
         #image.save(f"Histo_{f}.png")
-        #print(image.size)
+
         frame_buffer_list = []
         final = Image.open(final_img_path)
         final_copy = final.copy()      
         final_copy.paste(image, ( histo_count*slice_width, 0))
         #print(f"New Histo Size is: {image.size}")
         #print(f"Printing new imagee at X: {histo_count*slice_width}, Y:{0}")
-        final_copy.save(final_img_path)
+        final_copy.save(final_img_path, 'png')
         
         histo_count += 1
         logger.info("{:.2%} of total video analyzed".format(f/frame_count))
