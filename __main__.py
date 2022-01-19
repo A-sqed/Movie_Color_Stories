@@ -4,8 +4,6 @@
 # https://code.likeagirl.io/finding-dominant-colour-on-an-image-b4e075f98097
 ################################################################################
 
-from decimal import ROUND_DOWN
-from tkinter.tix import Y_REGION
 import cv2 
 import numpy as np
 import matplotlib.pyplot as plt
@@ -13,43 +11,70 @@ from sklearn.cluster import KMeans
 import logging
 from PIL import Image
 import PIL
-import tqdm
+from tqdm import tqdm
 import math
 import pathlib
 import io 
 import base64, warnings
+from matplotlib import cm
+
+################################################################################
+# Globals
+################################################################################
+
 warnings.filterwarnings("ignore", category=DeprecationWarning) #frameon, matplotlib
 path = pathlib.Path(__file__).parent.absolute()
-
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
-# create file handler which logs even debug messages
-#fh = logging.FileHandler('.log')
 logging.basicConfig(format="%(asctime)s [%(levelname)s] - [%(filename)s > %(funcName)s() > %(lineno)s] - %(message)s",
                     datefmt="%H:%M:%S",
                     filename="debug.log")
-# create console handler with a higher log level
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-#fh.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#fh.setFormatter(formatter)
-#ch.setFormatter(formatter)
-# add the handlers to the logger
-#logger.addHandler(fh)
-# Print to console
-#logger.addHandler(ch)
+
+path = "B:\\Videos\\_BLACK_22.mp4"
+final_img_path = "final.png"
+cap = cv2.VideoCapture(path)
+
+try:
+    if (cap.isOpened()== False):
+        print("Video Path: ", path)
+except ValueError as e:
+    print("Error opening video stream or file")
+    print(f"Unexpected {e=}, {type(e)=}")
+
+frame_buffer_list = []
+frame_list = []
+
+
+histo_count = 0
+frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+fps = math.floor(cap.get(cv2.CAP_PROP_FPS))
+frames_per_histo = math.floor(fps)
+total_histos = math.floor(frame_count/frames_per_histo)
+
+# Movie dicates the width of the canvas
+slice_width = 1
+target_canvas_width = math.ceil(slice_width*total_histos)
+slice_height = 2160 #math.ceil(target_canvas_width*.75)
+
+# Blank Canvas 
+final_image = Image.new("RGB", (target_canvas_width, slice_height), (255, 255, 255))
+final_image = final_image.save(final_img_path)
+
+print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames")
+print(f"Total K-Means to Review: {total_histos}")
+print(f"Setting slice to {slice_width} pixel(s) and canvas to {target_canvas_width}(W) x {slice_height}(H)")
 
 ################################################################################
-# Helpers
+# Function defs 
 ################################################################################
 
 def find_histogram(clt):
     """
-    create a histogram with k clusters
+    create a histogram of k clusters
     :param: clt
-    :return:hist
+    :return: hist
     """
     numLabels = np.arange(0, len(np.unique(clt.labels_)) + 1)
     (hist, _) = np.histogram(clt.labels_, bins=numLabels)
@@ -59,11 +84,17 @@ def find_histogram(clt):
 
     return hist
 
-def plot_colors2(hist, centroids, slice_width, slice_height):
+def plot_histo(hist, centroids, slice_width, slice_height):
+    """
+    Plot a bar chart from histpgram
+    param: histogram, centroid, width of bar, height of bar
+    return:  np array of plot
+    """
 
     # Size the Bar    
-    x = slice_width #50
-    y = slice_height #500
+    y = slice_width #50
+    x = slice_height #500
+    #logger.info(f"Creating a bar that is {x} x {y}")
     rgb = 3
     bar = np.zeros((x, y, rgb), dtype="uint8")
     startX = 0
@@ -83,11 +114,13 @@ def plot_colors2(hist, centroids, slice_width, slice_height):
     # return the bar chart
     return bar
 
-def get_num_pixels(filepath):
-    width, height = Image.open(filepath).size
-    return width*height
-
 def average_frames(frame_buffer_list):
+    """
+    Find and average image from a set of list of images
+    param: list of images encoded in base64
+    return: PIL image object
+    """
+    
     logger.info(f"Finding an average image of {len(frame_buffer_list)} frames")
 
     # Assuming all images are the same size, get dimensions of first image
@@ -110,95 +143,76 @@ def average_frames(frame_buffer_list):
     
     # Generate, save and preview final image
     average_image = Image.fromarray(arr, mode="RGB")
-    
-    # Check how frames are being averaged
     #average_image.show()
+    
     return average_image  
  
-def plot_histogram(average_image, slice_width, slice_height):
+def paint_canvas(average_image, slice_width, slice_height, n_clusters=5):
+        logger.info(f"Plotting Histo, Clusters: {n_clusters}, Frame {f-frames_per_histo} to {f}")
         
         # Dont send frame, send average of buffer writes to png
         img = np.asarray(average_image) 
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-
-        logger.info(f"Reshaping Frame")
         
         #represent as row*column,channel number
         img = img.reshape((img.shape[0] * img.shape[1],3)) 
-
-        #cluster number
-        n_clusters = 5
-        logger.info(f"KMeans, Clusters: {n_clusters}, Frame: {f}")
         
         # Fit the model using the image 
         clt = KMeans(n_clusters=n_clusters) 
         clt.fit(img)
 
         hist = find_histogram(clt)
-        bar = plot_colors2(hist, clt.cluster_centers_, slice_width, slice_height)
+        bar = plot_histo(hist, clt.cluster_centers_, slice_width, slice_height)
+        im = Image.fromarray(bar)
+        
+        return im
+        """
+        im.show()
+        buffer = io.BytesIO()
+        #im.save(buffer,format='png')
+        
+        im.save(buffer, format='png', 
+                    bbox_inches='tight', 
+                    frameon=False, 
+                    pad_inches=0.0)
+        
+        buffer.seek(0)
+        
 
         dpi=96 # dots per inch
-        #plt.figure(figsize=(math.ceil(slice_width/dpi), math.ceil(slice_height/dpi)), dpi=dpi)
         plt.axis("off")
         plt.margins(0)
         plt.imshow(bar, interpolation='antialiased', origin='upper')
-
+        
         buffer = io.BytesIO()
-        plt.savefig(buffer, format='png', bbox_inches='tight', frameon=False, pad_inches=0.0)
+        #im.save(buffer,format='png')
+        
+        plt.savefig(buffer, format='png', 
+                    bbox_inches='tight', 
+                    frameon=False, 
+                    pad_inches=0.0)
+        
         buffer.seek(0)
         im = Image.open(buffer)
-        #print(f"Before going to main here is the size: {im.size}")
-        return im
 
+        return im
+        """
 ################################################################################
 # Output Settings
 ################################################################################
 
-path = "B:\\Videos\\_BLACK_22.mp4"
-final_img_path = "final.png"
-cap = cv2.VideoCapture(path)
-
-try:
-    if (cap.isOpened()== False):
-        print("Video Path: ", path)
-except ValueError as e:
-    print("Error opening video stream or file")
-    print(f"Unexpected {e=}, {type(e)=}")
-
-
-target_fps = 1 # How many FPS for each histo
-histo_count = 0
-frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-fps = round(cap.get(cv2.CAP_PROP_FPS))
-frames_per_histo = round(fps / target_fps)
-total_histos = frame_count/frames_per_histo
-
-frame_buffer_list = []
-frame_list = []
-
-canvas_resize_width = 3840 #4K max width
-
-#slice_width = 25
-target_canvas_width = 3840
-slice_width = math.floor(frame_count/target_canvas_width) #math.floor(target_canvas_width / total_histos)
-#target_canvas_width = math.ceil(slice_width*total_histos)
-slice_height = 2160 #math.ceil(target_canvas_width*.75)
-target_canvas_height = 2160 #slice_height
-
-final_image = Image.new("RGB", (target_canvas_width, target_canvas_height), (255, 255, 255))
-final_image = final_image.save(final_img_path)
-
-print(f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames")
-print(f"Setting slice to {slice_width} pixels (w) and canvas to {target_canvas_width}(W) x {target_canvas_height}(H)")
-
 # Set range to be a mod of FPS target for f in range(0, frame_count):
-for f in range(0, frame_count):
+pbar = tqdm(range(frame_count))
+
+for f in pbar:
+    pbar.set_description("Processing Histogram %s" % str(histo_count+1))
     
     # Isolate the frame
     cap.set(1,f)
         
     ret, frame = cap.read()
     
+    # Stop if video runs out
     if not ret: 
         break
 
@@ -214,33 +228,37 @@ for f in range(0, frame_count):
 
         # Average the list of frames seen
         averaged_frame = average_frames(frame_buffer_list)
-        #averaged_frame.show(title='Average frame')
         
         # Find a k-cluster histogram of the average 
-        image = plot_histogram(averaged_frame, slice_width, slice_height)
+        image = paint_canvas(averaged_frame, slice_width, slice_height)
         
         # Change Size of histo
-        #
-        print(f"Image before rotate size: {image.size}")
-        image = image.rotate(-90, resample=PIL.Image.NEAREST, expand = 1)
-        image = image.resize((slice_width, slice_height))
-        #image.thumbnail((slice_width, slice_height), PIL.Image.ANTIALIAS )
-        print(f"Image after rotate size: {image.size}")
-        image.show()
-        #image.save(f"Histo_{f}.png")
+        #image = image.rotate(-90, resample=PIL.Image.NEAREST, expand = 1)
+        #print(f"Image size before resize: {image.size}")
+        #image = image.resize((slice_width, slice_height))
 
-        frame_buffer_list = []
         final = Image.open(final_img_path)
         final_copy = final.copy()      
         final_copy.paste(image, ( histo_count*slice_width, 0))
-        #print(f"New Histo Size is: {image.size}")
-        #print(f"Printing new imagee at X: {histo_count*slice_width}, Y:{0}")
         final_copy.save(final_img_path, 'png')
         
+        frame_buffer_list = []
         histo_count += 1
         logger.info("{:.2%} of total video analyzed".format(f/frame_count))
-        print("{:.2%} of total video analyzed".format(f/frame_count))
 
-print(f"Final image at {final_img_path} complete")
+print(f"Final image at {path+final_img_path} complete")
 cap.release()
 cv2.destroyAllWindows()
+
+
+# create file handler which logs even debug messages
+#fh = logging.FileHandler('.log')
+#fh.setLevel(logging.INFO)
+# create formatter and add it to the handlers
+#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+#fh.setFormatter(formatter)
+#ch.setFormatter(formatter)
+# add the handlers to the logger
+#logger.addHandler(fh)
+# Print to console
+#logger.addHandler(ch)
