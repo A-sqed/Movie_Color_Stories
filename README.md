@@ -11,13 +11,14 @@ cars wide. Therefore, the final output is composed as follows:
 2. KNN 5-point clustering analyzes the image and outputs a histogram showing the proportional contribution of each cluster to the total image composition
 3. Paint the histogram in chronological order to the final image 
 ```
+
 ```
 ## Example Outputs:
 Fantasia:
-![alt text]()
+![alt text](https://github.com/A-sqed/Movie_Color_Stories/blob/ae72674637964095978382ca96a592e618fd8839/example_output/fantasia.png)
 
 Nightmare Before Christmas:
-![alt text]()
+![alt text](https://github.com/A-sqed/Movie_Color_Stories/blob/ae72674637964095978382ca96a592e618fd8839/example_output/nightmare_before_christmas.png)
 
 ```
 
