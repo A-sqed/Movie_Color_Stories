@@ -1,7 +1,6 @@
 ################################################################################
 # Author: Adrian Adduci
 # Contact: faa2160@columbia.edu
-# https://code.likeagirl.io/finding-dominant-colour-on-an-image-b4e075f98097
 ################################################################################
 
 import cv2 
@@ -33,7 +32,7 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] - [%(filename)s > %(func
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
-file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1990s\\1999 - Fantasia 2000.avi"
+file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1990s\\1993 - The Nightmare Before Christmas.avi"
 final_img_path = "final.png"
 cap = cv2.VideoCapture(file_path)
 
@@ -92,8 +91,8 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     return:  np array of plot
     """
  
-    y = slice_width #50
-    x = slice_height #500
+    x = slice_width #50
+    y = slice_height #500
     rgb = 3
     bar = np.zeros((x, y, rgb), dtype="uint8")
     startX = 0
@@ -201,7 +200,7 @@ for f in pbar:
         
         # Find a k-cluster histogram of the average 
         image = paint_canvas(averaged_frame, slice_width, slice_height)
-  
+        image = image.rotate(-90, resample=PIL.Image.NEAREST, expand = 1)
         final = Image.open(final_img_path)
         final_copy = final.copy()      
         final_copy.paste(image, ( histo_count*slice_width, 0))
