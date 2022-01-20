@@ -17,6 +17,7 @@ import pathlib
 import io 
 import base64, warnings
 from matplotlib import cm
+from FaissKMeans import FaissKMeans
 
 ################################################################################
 # Globals
@@ -32,13 +33,13 @@ logging.basicConfig(format="%(asctime)s [%(levelname)s] - [%(filename)s > %(func
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
-path = "B:\\Videos\\_BLACK_22.mp4"
+file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1990s\\1999 - Fantasia 2000.avi"
 final_img_path = "final.png"
-cap = cv2.VideoCapture(path)
+cap = cv2.VideoCapture(file_path)
 
 try:
     if (cap.isOpened()== False):
-        print("Video Path: ", path)
+        print("Video Path: ", file_path)
 except ValueError as e:
     print("Error opening video stream or file")
     print(f"Unexpected {e=}, {type(e)=}")
@@ -90,11 +91,9 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     param: histogram, centroid, width of bar, height of bar
     return:  np array of plot
     """
-
-    # Size the Bar    
+ 
     y = slice_width #50
     x = slice_height #500
-    #logger.info(f"Creating a bar that is {x} x {y}")
     rgb = 3
     bar = np.zeros((x, y, rgb), dtype="uint8")
     startX = 0
@@ -158,45 +157,16 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=5):
         img = img.reshape((img.shape[0] * img.shape[1],3)) 
         
         # Fit the model using the image 
-        clt = KMeans(n_clusters=n_clusters) 
+        clt = KMeans(n_clusters=n_clusters, verbose=1) 
+        #clt = FaissKMeans(n_clusters=n_clusters)
         clt.fit(img)
-
+        
         hist = find_histogram(clt)
         bar = plot_histo(hist, clt.cluster_centers_, slice_width, slice_height)
         im = Image.fromarray(bar)
         
         return im
-        """
-        im.show()
-        buffer = io.BytesIO()
-        #im.save(buffer,format='png')
-        
-        im.save(buffer, format='png', 
-                    bbox_inches='tight', 
-                    frameon=False, 
-                    pad_inches=0.0)
-        
-        buffer.seek(0)
-        
-
-        dpi=96 # dots per inch
-        plt.axis("off")
-        plt.margins(0)
-        plt.imshow(bar, interpolation='antialiased', origin='upper')
-        
-        buffer = io.BytesIO()
-        #im.save(buffer,format='png')
-        
-        plt.savefig(buffer, format='png', 
-                    bbox_inches='tight', 
-                    frameon=False, 
-                    pad_inches=0.0)
-        
-        buffer.seek(0)
-        im = Image.open(buffer)
-
-        return im
-        """
+       
 ################################################################################
 # Output Settings
 ################################################################################
@@ -231,12 +201,7 @@ for f in pbar:
         
         # Find a k-cluster histogram of the average 
         image = paint_canvas(averaged_frame, slice_width, slice_height)
-        
-        # Change Size of histo
-        #image = image.rotate(-90, resample=PIL.Image.NEAREST, expand = 1)
-        #print(f"Image size before resize: {image.size}")
-        #image = image.resize((slice_width, slice_height))
-
+  
         final = Image.open(final_img_path)
         final_copy = final.copy()      
         final_copy.paste(image, ( histo_count*slice_width, 0))
@@ -246,19 +211,6 @@ for f in pbar:
         histo_count += 1
         logger.info("{:.2%} of total video analyzed".format(f/frame_count))
 
-print(f"Final image at {path+final_img_path} complete")
+print(f"Final image at {str(path)+final_img_path} complete")
 cap.release()
 cv2.destroyAllWindows()
-
-
-# create file handler which logs even debug messages
-#fh = logging.FileHandler('.log')
-#fh.setLevel(logging.INFO)
-# create formatter and add it to the handlers
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-#fh.setFormatter(formatter)
-#ch.setFormatter(formatter)
-# add the handlers to the logger
-#logger.addHandler(fh)
-# Print to console
-#logger.addHandler(ch)
