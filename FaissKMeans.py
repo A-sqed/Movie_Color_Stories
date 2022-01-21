@@ -2,7 +2,7 @@ import faiss
 import numpy as np
 
 class FaissKMeans:
-    def __init__(self, n_clusters=8, n_init=10, max_iter=300):
+    def __init__(self, n_clusters=5, n_init=10, max_iter=300):
         self.n_clusters = n_clusters
         self.n_init = n_init
         self.max_iter = max_iter
@@ -18,7 +18,7 @@ class FaissKMeans:
         self.kmeans.train(X.astype(np.float32))
         self.cluster_centers_ = self.kmeans.centroids
         self.inertia_ = self.kmeans.obj[-1]
-        self.labels_ = self.kmeans.index.search(x=X, k=1)[1].reshape(-1)
+        self.labels_ = self.kmeans.index.search(X.astype(np.float32),1)[1].reshape(-1)
 
     def predict(self, X):
         return self.kmeans.index.search(X.astype(np.float32), 1)[1]

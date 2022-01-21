@@ -36,7 +36,7 @@ logging.basicConfig(
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
-file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1990s\\1993 - The Nightmare Before Christmas.avi"
+file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1980s\\1989 - The Little Mermaid.m4v"
 final_img_path = "final.png"
 cap = cv2.VideoCapture(file_path)
 
@@ -168,8 +168,8 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=5):
     img = img.reshape((img.shape[0] * img.shape[1], 3))
 
     # Fit the model using the image
-    clt = KMeans(n_clusters=n_clusters, verbose=1)
-    # clt = FaissKMeans(n_clusters=n_clusters)
+    #clt = KMeans(n_clusters=n_clusters, verbose=1)
+    clt = FaissKMeans(n_clusters=n_clusters)
     clt.fit(img)
 
     hist = find_histogram(clt)
