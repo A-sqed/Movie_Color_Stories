@@ -100,14 +100,34 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     param: histogram, centroid, width of bar, height of bar
     return:  np array of plot
     """
+    """
+        for (percent, color) in zip(hist, centroids):
+        print(percent, color)
+    """
 
     x = slice_width  # 50
     y = slice_height  # 500
     rgb = 3
     bar = np.zeros((x, y, rgb), dtype="uint8")
     startX = 0
-
-    for (percent, color) in zip(hist, centroids):
+    
+    first = True
+    new_zip = []
+    
+    if len(hist) % 2 == 0:
+        new_zip = zip(hist, centroids)
+    else:
+        for (percent, color) in zip(reversed(hist), reversed(centroids)):
+            if first == True:
+                new_zip.append((percent, color))
+                first = False
+            else:
+                new_zip.insert(0,(percent/2, color))
+                new_zip.append((percent/2, color))
+    
+    for item in new_zip:
+        percent = item[0]
+        color = item[1]
 
         # plot the relative percentage of each cluster
         endX = startX + (percent * y)
@@ -155,7 +175,7 @@ def average_frames(frame_buffer_list):
     return average_image
 
 
-def paint_canvas(average_image, slice_width, slice_height, n_clusters=5):
+def paint_canvas(average_image, slice_width, slice_height, n_clusters=4):
     logger.info(
         f"Plotting Histo, Clusters: {n_clusters}, Frame {f-frames_per_histo} to {f}"
     )
@@ -168,8 +188,8 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=5):
     img = img.reshape((img.shape[0] * img.shape[1], 3))
 
     # Fit the model using the image
-    #clt = KMeans(n_clusters=n_clusters, verbose=1)
-    clt = FaissKMeans(n_clusters=n_clusters)
+    #clt = KMeans(n_clusters=n_clusters, verbose=1) #CPU
+    clt = FaissKMeans(n_clusters=n_clusters) #GPU
     clt.fit(img)
 
     hist = find_histogram(clt)
@@ -184,11 +204,12 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=5):
 ################################################################################
 
 # Set range to be a mod of FPS target for f in range(0, frame_count):
-pbar = tqdm(range(frame_count))
+#pbar = tqdm(range(frame_count))
 
-for f in pbar:
-    pbar.set_description("Processing Histogram %s" % str(histo_count + 1))
-
+for f in range(frame_count):
+    #pbar.set_description("Processing Histogram %s" % str(histo_count + 1))
+    percent = str(round(f/frame_count, 2))
+    print(f"Reviewing Frame {f} of {frame_count} - {percent}%", end="\r")
     # Isolate the frame
     cap.set(1, f)
 
@@ -223,6 +244,6 @@ for f in pbar:
         histo_count += 1
         logger.info("{:.2%} of total video analyzed".format(f / frame_count))
 
-print(f"Final image at {str(path)+final_img_path} complete")
+print(f"Final image at {str(path)} \\ {final_img_path} complete")
 cap.release()
 cv2.destroyAllWindows()
