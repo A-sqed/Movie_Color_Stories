@@ -102,49 +102,49 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     param: histogram, centroid, width of bar, height of bar
     return:  np array of plot
     """
-    """
-        for (percent, color) in zip(hist, centroids):
-        print(percent, color)
-    """
-
-    x = slice_width  # 50
+    x = slice_width #slice_width  # 50
     y = slice_height  # 500
     rgb = 3
-    bar = np.zeros((x, y, rgb), dtype="uint8")
-    startX = 0
     
     first = True
-    new_zip = []
-    
+    reordered_histo = []
+    bar = np.zeros((y, x, rgb), dtype="uint8")
+   
     # If Even Clusters - Proceed as normal 
     if len(hist) % 2 == 0:
-        new_zip = zip(hist, centroids)
+        reordered_histo = zip(hist, centroids)
     else:
         for (percent, color) in zip(reversed(hist), reversed(centroids)):
             if first == True:
-                new_zip.append((percent, color))
+                reordered_histo.append((percent, color))
                 first = False
             else:
-                new_zip.insert(0,(percent/2, color))
-                new_zip.append((percent/2, color))
+                reordered_histo.insert(0,(percent/2, color))
+                reordered_histo.append((percent/2, color))
     
-    for item in new_zip:
-        percent = item[0]
-        color = item[1]
-
+    startY = 0
+    
+    for tup in reordered_histo:
+        percent = tup[0]
+        color = tup[1]
+        
+        print(f"Percent: {percent}, and color {color}")
         # plot the relative percentage of each cluster
-        endX = startX + (percent * y)
-        
-        #X,Y
-        start = (int(startX), 0)
-        end = (int(endX), x)
-        
+        endY = startY + (percent * y)
+        #X,Y 
+        start = (0, int(startY))
+        end = (x, int(endY) )
+
+        print(f"Starting at {start} ending at {end}")
+        # Draw top-left -> Bottom Right  
         cv2.rectangle(
             bar, start, end, color.astype("uint8").tolist(), -1
         )
 
-        startX = endX
+        startY = endY
 
+    #bar = np.rot90(bar,1) # Time counterclockwise
+    
     # return the bar chart
     return bar
 
@@ -196,14 +196,14 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=clusters):
     img = img.reshape((img.shape[0] * img.shape[1], 3))
 
     # Fit the model using the image
-    #clt = KMeans(n_clusters=n_clusters, verbose=1) #CPU
-    clt = FaissKMeans(n_clusters=n_clusters) #GPU
+    #clt = KMeans(n_clusters=clusters, verbose=1) #CPU
+    clt = FaissKMeans(n_clusters=clusters) #GPU
     clt.fit(img)
 
     hist = find_histogram(clt)
     bar = plot_histo(hist, clt.cluster_centers_, slice_width, slice_height)
     im = Image.fromarray(bar)
-
+    #print(f"Size: {im.size}")
     return im
 
 
@@ -242,7 +242,8 @@ for f in range(frame_count):
 
         # Find a k-cluster histogram of the average
         image = paint_canvas(averaged_frame, slice_width, slice_height)
-        image = image.rotate(-90, resample=PIL.Image.NEAREST, expand=1)
+
+        #image = image.rotate(-90, resample=PIL.Image.NEAREST, expand=1)
         final = Image.open(final_img_path)
         final_copy = final.copy()
         final_copy.paste(image, (histo_count * slice_width, 0))
