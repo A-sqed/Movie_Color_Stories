@@ -36,8 +36,9 @@ logging.basicConfig(
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
-file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1980s\\1989 - The Little Mermaid.m4v"
-final_img_path = "final.png"
+file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1960s\\1967 - The Jungle Book.avi"
+final_img_name = "final.png"
+final_img_path = str(path)+"\\"+str(final_img_name)
 cap = cv2.VideoCapture(file_path)
 
 try:
@@ -61,6 +62,7 @@ total_histos = math.floor(frame_count / frames_per_histo)
 slice_width = 1
 target_canvas_width = math.ceil(slice_width * total_histos)
 slice_height = 2160  # math.ceil(target_canvas_width*.75)
+clusters = 3
 
 # Blank Canvas
 final_image = Image.new("RGB", (target_canvas_width, slice_height), (255, 255, 255))
@@ -73,7 +75,7 @@ print(f"Total K-Means to Review: {total_histos}")
 print(
     f"Setting slice to {slice_width} pixel(s) and canvas to {target_canvas_width}(W) x {slice_height}(H)"
 )
-
+print(f"Saving the final image image at {final_img_path}")
 ################################################################################
 # Function defs
 ################################################################################
@@ -114,6 +116,7 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     first = True
     new_zip = []
     
+    # If Even Clusters - Proceed as normal 
     if len(hist) % 2 == 0:
         new_zip = zip(hist, centroids)
     else:
@@ -131,8 +134,13 @@ def plot_histo(hist, centroids, slice_width, slice_height):
 
         # plot the relative percentage of each cluster
         endX = startX + (percent * y)
+        
+        #X,Y
+        start = (int(startX), 0)
+        end = (int(endX), x)
+        
         cv2.rectangle(
-            bar, (int(startX), 0), (int(endX), x), color.astype("uint8").tolist(), -1
+            bar, start, end, color.astype("uint8").tolist(), -1
         )
 
         startX = endX
@@ -175,7 +183,7 @@ def average_frames(frame_buffer_list):
     return average_image
 
 
-def paint_canvas(average_image, slice_width, slice_height, n_clusters=4):
+def paint_canvas(average_image, slice_width, slice_height, n_clusters=clusters):
     logger.info(
         f"Plotting Histo, Clusters: {n_clusters}, Frame {f-frames_per_histo} to {f}"
     )
@@ -208,8 +216,8 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=4):
 
 for f in range(frame_count):
     #pbar.set_description("Processing Histogram %s" % str(histo_count + 1))
-    percent = str(round(f/frame_count, 2))
-    print(f"Reviewing Frame {f} of {frame_count} - {percent}%", end="\r")
+    percent = "{:.2%}".format(f/frame_count)
+    print(f"Reviewing Frame {f} of {frame_count} - {percent}", end="\r")
     # Isolate the frame
     cap.set(1, f)
 
@@ -244,6 +252,6 @@ for f in range(frame_count):
         histo_count += 1
         logger.info("{:.2%} of total video analyzed".format(f / frame_count))
 
-print(f"Final image at {str(path)} \\ {final_img_path} complete")
+print(f"Final image at {final_img_path}")
 cap.release()
 cv2.destroyAllWindows()
