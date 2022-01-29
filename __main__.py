@@ -18,7 +18,9 @@ from FaissKMeans import FaissKMeans
 from matplotlib import cm
 from PIL import Image
 from sklearn.cluster import KMeans
+from datetime import date 
 from tqdm import tqdm
+import sys, getopt
 
 ################################################################################
 # Globals
@@ -36,50 +38,9 @@ logging.basicConfig(
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
-file_path = "B:\\_projects\\Disney Movie Collection\\Disney 1960s\\1967 - The Jungle Book.avi"
-final_img_name = "final.png"
-final_img_path = str(path)+"\\"+str(final_img_name)
-cap = cv2.VideoCapture(file_path)
-
-try:
-    if cap.isOpened() == False:
-        print("Video Path: ", file_path)
-except ValueError as e:
-    print("Error opening video stream or file")
-    print(f"Unexpected {e=}, {type(e)=}")
-
-frame_buffer_list = []
-frame_list = []
-
-
-histo_count = 0
-frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
-fps = math.floor(cap.get(cv2.CAP_PROP_FPS))
-frames_per_histo = math.floor(fps)
-total_histos = math.floor(frame_count / frames_per_histo)
-
-# Movie dicates the width of the canvas
-slice_width = 1
-target_canvas_width = math.ceil(slice_width * total_histos)
-slice_height = 2160  # math.ceil(target_canvas_width*.75)
-clusters = 3
-
-# Blank Canvas
-final_image = Image.new("RGB", (target_canvas_width, slice_height), (255, 255, 255))
-final_image = final_image.save(final_img_path)
-
-print(
-    f"Approx Video Length: {round(frame_count/(fps*60))} Minutes, at {fps} FPS - {frame_count} Total Frames"
-)
-print(f"Total K-Means to Review: {total_histos}")
-print(
-    f"Setting slice to {slice_width} pixel(s) and canvas to {target_canvas_width}(W) x {slice_height}(H)"
-)
-print(f"Saving the final image image at {final_img_path}")
 ################################################################################
 # Function defs
 ################################################################################
-
 
 def find_histogram(clt):
     """
@@ -95,7 +56,6 @@ def find_histogram(clt):
 
     return hist
 
-
 def plot_histo(hist, centroids, slice_width, slice_height):
     """
     Plot a bar chart from histpgram
@@ -109,7 +69,7 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     first = True
     reordered_histo = []
     bar = np.zeros((y, x, rgb), dtype="uint8")
-   
+
     # If Even Clusters - Proceed as normal 
     if len(hist) % 2 == 0:
         reordered_histo = zip(hist, centroids)
@@ -128,14 +88,14 @@ def plot_histo(hist, centroids, slice_width, slice_height):
         percent = tup[0]
         color = tup[1]
         
-        print(f"Percent: {percent}, and color {color}")
+        #print(f"Percent: {percent}, and color {color}")
         # plot the relative percentage of each cluster
         endY = startY + (percent * y)
         #X,Y 
         start = (0, int(startY))
         end = (x, int(endY) )
 
-        print(f"Starting at {start} ending at {end}")
+        #print(f"Starting at {start} ending at {end}")
         # Draw top-left -> Bottom Right  
         cv2.rectangle(
             bar, start, end, color.astype("uint8").tolist(), -1
@@ -147,7 +107,6 @@ def plot_histo(hist, centroids, slice_width, slice_height):
     
     # return the bar chart
     return bar
-
 
 def average_frames(frame_buffer_list):
     """
@@ -182,7 +141,6 @@ def average_frames(frame_buffer_list):
 
     return average_image
 
-
 def paint_canvas(average_image, slice_width, slice_height, n_clusters=clusters):
     logger.info(
         f"Plotting Histo, Clusters: {n_clusters}, Frame {f-frames_per_histo} to {f}"
@@ -206,53 +164,119 @@ def paint_canvas(average_image, slice_width, slice_height, n_clusters=clusters):
     #print(f"Size: {im.size}")
     return im
 
-
 ################################################################################
-# Output Settings
+# Main
 ################################################################################
 
-# Set range to be a mod of FPS target for f in range(0, frame_count):
-#pbar = tqdm(range(frame_count))
+def main(argv):
+   
+    file_path = ""
+    final_img_name = "final.png"
+    final_img_path = str(path)+"\\"+str(final_img_name)
+    
+     
+    try:
+        opts = getopt.getopt(argv,"hi:o:",["ifile=","ofile="])
+    except getopt.GetoptError:
+        print(f'{path} -i {file_path} -o {final_img_name}')
+        sys.exit(2)
+        
+    for opt, arg in opts:
+        if opt == '-h':
+            print("-i <inputfile> -o <outputfile>")
+            sys.exit()
+        elif opt in ("-i", "--ifile"):
+            file_path = arg
+        elif opt in ("-o", "--ofile"):
+            final_img_name = arg
+            final_img_path = str(file_path)+"\\"+str(final_img_name)
+        if file_path == final_img_path:
+            print("Cannot overwrite the movie file")
+            sys.exit()
 
-for f in range(frame_count):
-    #pbar.set_description("Processing Histogram %s" % str(histo_count + 1))
-    percent = "{:.2%}".format(f/frame_count)
-    print(f"Reviewing Frame {f} of {frame_count} - {percent}", end="\r")
-    # Isolate the frame
-    cap.set(1, f)
+    cap = cv2.VideoCapture(file_path)
+       
+    try:
+        if cap.isOpened() == False:
+            print("Video Path: ", file_path)
+    except ValueError as e:
+        print("Error opening video stream or file")
+        print(f"Unexpected {e=}, {type(e)=}")
+        sys.exit()
 
-    ret, frame = cap.read()
+    frame_buffer_list = []
 
-    # Stop if video runs out
-    if not ret:
-        break
+    histo_count = 0
+    frame_count = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))
+    fps = math.floor(cap.get(cv2.CAP_PROP_FPS))
+    frames_per_histo = math.floor(fps)
+    total_histos = math.floor(frame_count / frames_per_histo)
 
-    # encode
-    retval, buffer = cv2.imencode(".png", frame)
-    png_as_text = base64.b64encode(buffer)
+    # Movie dicates the width of the canvas
+    slice_width = 1
+    target_canvas_width = math.ceil(slice_width * total_histos)
+    slice_height = 2160  # math.ceil(target_canvas_width*.75)
+    clusters = 3
 
-    # Hold histogram image for processing
-    frame_buffer_list.append(png_as_text)
+    # Blank Canvas
+    final_image = Image.new("RGB", (target_canvas_width, slice_height), (255, 255, 255))
+    final_image = final_image.save(final_img_path)
 
-    # If you have processed enough frames for target fps
-    if len(frame_buffer_list) == frames_per_histo:
+    print(f"Video Length: {round(frame_count/(fps*60))} min, at {fps} FPS - {frame_count} Frames")
+    print(f"Total K-Means to Review: {total_histos}")
+    print(f"Slice: {slice_width} pixel(s), Canvas: {target_canvas_width}(W) x {slice_height}(H)")
+    print(f"Saving the final image image at {final_img_path}")
+    print(f"Beginning at {date.today()}")
 
-        # Average the list of frames seen
-        averaged_frame = average_frames(frame_buffer_list)
+   ################################################################################
+    # Output Settings
+    ################################################################################
 
-        # Find a k-cluster histogram of the average
-        image = paint_canvas(averaged_frame, slice_width, slice_height)
+    # Set range to be a mod of FPS target for f in range(0, frame_count):
+    #pbar = tqdm(range(frame_count))
 
-        #image = image.rotate(-90, resample=PIL.Image.NEAREST, expand=1)
-        final = Image.open(final_img_path)
-        final_copy = final.copy()
-        final_copy.paste(image, (histo_count * slice_width, 0))
-        final_copy.save(final_img_path, "png")
+    for f in range(frame_count):
+        #pbar.set_description("Processing Histogram %s" % str(histo_count + 1))
+        percent = "{:.2%}".format(f/frame_count)
+        print(f"Reviewing Frame {f} of {frame_count} - {percent}", end="\r")
+        # Isolate the frame
+        cap.set(1, f)
 
-        frame_buffer_list = []
-        histo_count += 1
-        logger.info("{:.2%} of total video analyzed".format(f / frame_count))
+        ret, frame = cap.read()
 
-print(f"Final image at {final_img_path}")
-cap.release()
-cv2.destroyAllWindows()
+        # Stop if video runs out
+        if not ret:
+            break
+
+        # encode
+        retval, buffer = cv2.imencode(".png", frame)
+        png_as_text = base64.b64encode(buffer)
+
+        # Hold histogram image for processing
+        frame_buffer_list.append(png_as_text)
+
+        # If you have processed enough frames for target fps
+        if len(frame_buffer_list) == frames_per_histo:
+
+            # Average the list of frames seen
+            averaged_frame = average_frames(frame_buffer_list)
+
+            # Find a k-cluster histogram of the average
+            image = paint_canvas(averaged_frame, slice_width, slice_height)
+
+            #image = image.rotate(-90, resample=PIL.Image.NEAREST, expand=1)
+            final = Image.open(final_img_path)
+            final_copy = final.copy()
+            final_copy.paste(image, (histo_count * slice_width, 0))
+            final_copy.save(final_img_path, "png")
+
+            frame_buffer_list = []
+            histo_count += 1
+            logger.info("{:.2%} of total video analyzed".format(f / frame_count))
+
+    print(f"Final image at {final_img_path}")
+    cap.release()
+    cv2.destroyAllWindows()
+
+if __name__ == "__main__":
+   main(sys.argv[1:])
