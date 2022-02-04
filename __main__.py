@@ -21,6 +21,7 @@ from sklearn.cluster import KMeans
 from datetime import date 
 from tqdm import tqdm
 import sys, getopt
+import numexpr as ne
 
 ################################################################################
 # Globals
@@ -38,9 +39,24 @@ logging.basicConfig(
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
 
+
+slice_width = 1
+slice_height = 2160  # math.ceil(target_canvas_width*.75)
+clusters = 3
+
+
 ################################################################################
 # Function defs
 ################################################################################
+
+# Get dominant color on the image 
+def bincount_numexpr_app(average_image):
+    a2D = average_image.reshape(-1,average_image.shape[-1])
+    col_range = (256, 256, 256) # generically : a2D.max(0)+1
+    eval_params = {'a0':a2D[:,0],'a1':a2D[:,1],'a2':a2D[:,2],
+                   's0':col_range[0],'s1':col_range[1]}
+    a1D = ne.evaluate('a0*s0*s1+a1*s0+a2',eval_params)
+    return np.unravel_index(np.bincount(a1D).argmax(), col_range)
 
 def find_histogram(clt):
     """
@@ -213,10 +229,9 @@ def main(argv):
     total_histos = math.floor(frame_count / frames_per_histo)
 
     # Movie dicates the width of the canvas
-    slice_width = 1
+
     target_canvas_width = math.ceil(slice_width * total_histos)
-    slice_height = 2160  # math.ceil(target_canvas_width*.75)
-    clusters = 3
+
 
     # Blank Canvas
     final_image = Image.new("RGB", (target_canvas_width, slice_height), (255, 255, 255))
